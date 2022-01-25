@@ -173,7 +173,7 @@ async def _delprefix(ctx, prefix):
 # EJECUCIÓN ###################################################################
 
 
-bot.run(cfg.BOT_TOKEN)
+bot.run(cfg.BOT_TOKEN_DEV)
 
 print("<?> Ejecutado: main.py")
 
