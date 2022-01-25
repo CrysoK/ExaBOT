@@ -18,7 +18,7 @@ import config as cfg  # noqa E402
 # from pymongo import MongoClient  # noqa E402
 import mongoengine as mongo  # noqa E402
 
-from colecciones.colecciones import Espacios  # noqa E402
+from colecciones.espacios import Espacios  # noqa E402
 # fmt: on
 
 # INICIALIZACIÓN I ############################################################
@@ -38,12 +38,9 @@ mongo.connect(db="ExaBOT", host=cfg.MONGODB_URI)
 
 
 async def get_espacio(_id, nombre="<sin_nombre>"):
-    # espacio = espacios.find_one({"_id": _id})
     espacio = Espacios.objects(id=_id).first()
     if espacio is None:
-        # espacio = {"_id": _id, "prefix": ["?"]}
         espacio = Espacios(id=_id).save()
-        # espacios.insert_one(espacio)
         print(
             f"Espacio {nombre} (ID: {_id}) " + "no encontrado. Se ha creado."
         )
@@ -55,23 +52,17 @@ async def get_prefix(bot, message):
     """
     Retorna el prefijo del servidor con el id indicado.
     """
-    # _id = str(message.guild.id)
     _id = message.guild.id
     espacio = await get_espacio(_id, message.guild.name)
-    # print(espacio["prefix"])
     print(espacio.prefix)
-    # return espacio["prefix"]
     return espacio.prefix
 
 
 async def del_prefix(message, prefix):
-    # _id = str(message.guild.id)
     _id = message.guild.id
     espacio = await get_espacio(_id, message.guild.name)
     if len(espacio.prefix) > 1:
-        # espacio["prefix"].remove(prefix)
         espacio.prefix.remove(prefix)
-        # espacios.update_one({"_id": _id}, {"$set": espacio})
         espacio.save()
     else:
         await message.channel.send(
@@ -80,12 +71,9 @@ async def del_prefix(message, prefix):
 
 
 async def add_prefix(message, prefix):
-    # _id = str(message.guild.id)
     _id = message.guild.id
     espacio = await get_espacio(_id, message.guild.name)
-    # espacio["prefix"].append(prefix)
     espacio.prefix.append(prefix)
-    # espacios.update_one({"_id": _id}, {"$set": espacio})
     espacio.save()
 
 
