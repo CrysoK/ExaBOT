@@ -164,7 +164,7 @@ async def _addprefix(ctx, prefix):
 @commands.has_guild_permissions(administrator=True)
 async def _delprefix(ctx, prefix):
     await del_prefix(ctx, prefix)
-    await ctx.send("Prefijo eliminado")
+    await ctx.send(f"Prefijo `{prefix}` eliminado")
 
 
 # ERRORES #####################################################################
