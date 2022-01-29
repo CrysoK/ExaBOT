@@ -18,7 +18,7 @@ import config as cfg  # noqa E402
 # from pymongo import MongoClient  # noqa E402
 import mongoengine as mongo  # noqa E402
 
-from colecciones.espacios import Espacios  # noqa E402
+from colecciones import Espacios  # noqa E402
 # fmt: on
 
 # INICIALIZACIÓN I ############################################################
@@ -173,7 +173,7 @@ async def _delprefix(ctx, prefix):
 # EJECUCIÓN ###################################################################
 
 
-bot.run(cfg.BOT_TOKEN_DEV)
+bot.run(cfg.BOT_TOKEN)
 
 print("<?> Ejecutado: main.py")
 
