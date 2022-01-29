@@ -129,7 +129,11 @@ async def on_message(message):
         if len(prefix) == 1:
             res += f"Mi prefijo es `{prefix[0]}`"
         else:
-            res += f"Mis prefijos son `{prefix}`"
+            res += f"Mis prefijos son `{prefix[0]}`"
+            for p in prefix[1:-1]:
+                res += f", `{p}`"
+            res += f" y `{prefix[-1]}`."
+
         await message.channel.send(res)
 
     # Continuar con los comandos definidos
