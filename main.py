@@ -38,13 +38,12 @@ mongo.connect(db="ExaBOT", host=cfg.MONGODB_URI)
 
 
 async def get_espacio(_id, nombre="<sin_nombre>"):
-    espacio = Espacios.objects(id=_id).first()
+    espacio = Espacios.objects(_id=_id).first()
     if espacio is None:
-        espacio = Espacios(id=_id).save()
+        espacio = Espacios(_id=_id).save()
         print(
             f"Espacio {nombre} (ID: {_id}) " + "no encontrado. Se ha creado."
         )
-    print(espacio)
     return espacio
 
 
