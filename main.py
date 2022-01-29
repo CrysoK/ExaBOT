@@ -115,9 +115,9 @@ async def on_message(message):
     print(f"{message.author} en {message.channel}: {message.content}")
 
     # Reacciones
-    if message.channel.id == 924772189507555338:
-        await message.add_reaction("👍")
-        await message.add_reaction("👎")
+    # if message.channel.id == 924772189507555338:
+    #     await message.add_reaction("👍")
+    #     await message.add_reaction("👎")
 
     # Mención al bot
     if (
