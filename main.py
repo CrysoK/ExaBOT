@@ -15,84 +15,46 @@ load_dotenv(override=True)
 
 import config as cfg  # noqa E402
 
-# from pymongo import MongoClient  # noqa E402
 import mongoengine as mongo  # noqa E402
 
-from colecciones import Espacios  # noqa E402
+from utils import (  # noqa E402
+    ERRORES,
+    get_prefix,
+    array_natural,
+    cambiar_presencia,
+    attr2dict
+)
 # fmt: on
 
-# INICIALIZACIÓN I ############################################################
+# INICIALIZACIÓN ##############################################################
 
+
+# Comando de ayuda personalizado que hereda del comando por defecto.
+class Ayuda(commands.DefaultHelpCommand):
+    pass
+
+
+# Conexión a la base de datos.
 mongo.connect(db="ExaBOT", host=cfg.MONGODB_URI)
 
-# MongoDB
-# mongodb = MongoClient(cfg.MONGODB_URI)
-# # Database
-# db = mongodb["ExaBOT"]
-# # Colecciones
-# espacios = db["espacios"]
-# usuarios = db["usuarios"]
-
-
-# FUNCIONES ###################################################################
-
-
-async def get_espacio(_id, nombre="<sin_nombre>"):
-    espacio = Espacios.objects(_id=_id).first()
-    if espacio is None:
-        espacio = Espacios(_id=_id).save()
-        print(
-            f"Espacio {nombre} (ID: {_id}) " + "no encontrado. Se ha creado."
-        )
-    return espacio
-
-
-async def get_prefix(bot, message):
-    """
-    Retorna el prefijo del servidor con el id indicado.
-    """
-    _id = message.guild.id
-    espacio = await get_espacio(_id, message.guild.name)
-    print(espacio.prefix)
-    return espacio.prefix
-
-
-async def del_prefix(message, prefix):
-    _id = message.guild.id
-    espacio = await get_espacio(_id, message.guild.name)
-    if len(espacio.prefix) > 1:
-        espacio.prefix.remove(prefix)
-        espacio.save()
-    else:
-        await message.channel.send(
-            "Error. El bot debe tener al menos un prefijo."
-        )
-
-
-async def add_prefix(message, prefix):
-    _id = message.guild.id
-    espacio = await get_espacio(_id, message.guild.name)
-    espacio.prefix.append(prefix)
-    espacio.save()
-
-
-async def actualizar_presencia():
-    total = 0
-    for guild in bot.guilds:
-        total += len([m for m in guild.members if not m.bot])
-    await bot.change_presence(
-        activity=ds.Activity(
-            type=ds.ActivityType.watching,
-            name=f"a {total} humanos",
-        ),
-    )
-
-
-# INICIALIZACIÓN II ###########################################################
-
+# Intents de Discord para el bot.
 intents = ds.Intents.all()
 
-bot = commands.Bot(command_prefix=get_prefix, intents=intents)
+
+bot = commands.Bot(
+    command_prefix=get_prefix,
+    intents=intents,
+    help_command=Ayuda(
+        commands_heading="Comandos",
+        aliases_heading="Alias",
+        no_category="Sin categoría",
+        command_attrs={
+            "name": "ayuda",
+            "aliases": ["help", "h", "comandos", "cmds", "cmd"],
+        },
+    ),
+)
+
 
 # Cargar extensiones por defecto
 for ext in cfg.EXT_DEFAULT:
@@ -105,18 +67,13 @@ for ext in cfg.EXT_DEFAULT:
 @bot.event
 async def on_ready():
     print(f"Sesión iniciada como {bot.user} (ID: {bot.user.id})")
-    await actualizar_presencia()
+    await cambiar_presencia(bot)
 
 
 @bot.event
 async def on_message(message):
 
     print(f"{message.author} en {message.channel}: {message.content}")
-
-    # Reacciones
-    # if message.channel.id == 924772189507555338:
-    #     await message.add_reaction("👍")
-    #     await message.add_reaction("👎")
 
     # Mención al bot
     if (
@@ -128,10 +85,7 @@ async def on_message(message):
         if len(prefix) == 1:
             res += f"Mi prefijo es `{prefix[0]}`"
         else:
-            res += f"Mis prefijos son `{prefix[0]}`"
-            for p in prefix[1:-1]:
-                res += f", `{p}`"
-            res += f" y `{prefix[-1]}`."
+            res += f"Mis prefijos son {array_natural(prefix, formato='`')}."
 
         await message.channel.send(res)
 
@@ -150,27 +104,11 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_command_error(ctx, error):
-    await ctx.send(error)
-
-
-# COMANDOS ####################################################################
-
-
-@bot.command(name="addprefix")
-@commands.has_guild_permissions(administrator=True)
-async def _addprefix(ctx, prefix):
-    await add_prefix(ctx, prefix)
-    await ctx.send(f"Prefijo `{prefix}` añadido")
-
-
-@bot.command(name="delprefix")
-@commands.has_guild_permissions(administrator=True)
-async def _delprefix(ctx, prefix):
-    await del_prefix(ctx, prefix)
-    await ctx.send(f"Prefijo `{prefix}` eliminado")
-
-
-# ERRORES #####################################################################
+    # TODO: Traducir todos los errores.
+    # await ctx.send(error)
+    await ctx.send(
+        ERRORES[error.__class__.__name__].format(**attr2dict(error))
+    )
 
 
 # EJECUCIÓN ###################################################################

@@ -15,6 +15,6 @@ MONGODB_URI = os.environ["MONGODB_URI"]
 
 # Carpeta de extensiones
 EXT = "ext"
-EXT_DEFAULT = ["Owner", "Saludos", "Others"]
+EXT_DEFAULT = ["Bot", "Saludos", "Others", "AutoReaccion"]
 
 print("<?> Ejecutado: config.py")
