@@ -10,13 +10,13 @@ class Others(commands.Cog, name="Others"):
         pass
 
     @commands.command()
-    async def dividir(ctx, left: int, right: int):
-        """Adds two numbers together."""
+    async def dividir(self, ctx, left: int, right: int):
+        """Divide dos números cualquiera."""
         res = left / right
         await ctx.send(res)
 
     @commands.command(rest_is_raw=True)
-    async def repetir(ctx, *, arg):
+    async def repetir(self, ctx, *, arg):
         """Repite una cadena de texto."""
         await ctx.send(arg)
 
