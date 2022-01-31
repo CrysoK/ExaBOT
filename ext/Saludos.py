@@ -19,7 +19,7 @@ class Saludos(commands.Cog, name="Saludos"):
 
     @commands.command(name="hola")
     async def _hola(self, ctx, *, member: ds.Member = None):
-        """Says hello"""
+        """Te saludo"""
         member = member or ctx.author
         if self._last_member is None or self._last_member.id != member.id:
             await ctx.send(f"Hola {member.mention}")
