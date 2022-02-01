@@ -77,7 +77,7 @@ class Bot(commands.Cog, name="Bot"):
         """
         Controla los prefijos del bot (necesario: gestionar servidor).
         """
-        pass
+        await ctx.send_help("prefix")
 
     @_prefix.command(name="añadir", aliases=["a"])
     @commands.has_guild_permissions(manage_guild=True)
@@ -85,7 +85,7 @@ class Bot(commands.Cog, name="Bot"):
         """
         Añade un prefijo al bot.
         """
-        await add_prefix(ctx, prefix)
+        await add_prefix(ctx.message, prefix)
         await ctx.send(f"Prefijo `{prefix}` añadido")
 
     @_prefix.command(name="eliminar", aliases=["e"])
@@ -94,7 +94,7 @@ class Bot(commands.Cog, name="Bot"):
         """
         Elimina un prefijo del bot.
         """
-        await del_prefix(ctx, prefix)
+        await del_prefix(ctx.message, prefix)
         await ctx.send(f"Prefijo `{prefix}` eliminado")
 
 
