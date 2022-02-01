@@ -1,8 +1,8 @@
 import discord as ds
 from discord.ext import commands
 from colecciones import Espacios
-from emoji import EMOJI_ALIAS_UNICODE_ENGLISH as EMOJI_A  # type: ignore
-from emoji import UNICODE_EMOJI_ENGLISH as EMOJI_U  # type: ignore
+from emoji import EMOJI_ALIAS_UNICODE_ENGLISH as EMOJI_A
+from emoji import UNICODE_EMOJI_ENGLISH as EMOJI_U
 
 
 def array_natural(array, separador=",", formato=""):
