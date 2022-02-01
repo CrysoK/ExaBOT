@@ -35,7 +35,7 @@ class Ayuda(commands.DefaultHelpCommand):
 
 
 # Conexión a la base de datos.
-mongo.connect(db="ExaBOT", host=cfg.MONGODB_URI)
+mongo.connect(db=cfg.DB_NAME, host=cfg.MONGODB_URI)
 
 # Intents de Discord para el bot.
 intents = ds.Intents.all()
