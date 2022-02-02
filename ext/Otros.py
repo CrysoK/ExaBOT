@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 
-class Others(commands.Cog, name="Others"):
+class Otros(commands.Cog, name="Otros"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -29,7 +29,7 @@ class Others(commands.Cog, name="Others"):
 
 
 def setup(bot):
-    bot.add_cog(Others(bot))
+    bot.add_cog(Otros(bot))
 
 
-print("<?> Ejecutado: Others.py")
+print("<?> Ejecutado: Otros.py")

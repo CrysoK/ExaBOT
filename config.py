@@ -16,6 +16,6 @@ DB_NAME = os.environ["DB_NAME"]
 
 # Carpeta de extensiones
 EXT = "ext"
-EXT_DEFAULT = ["Bot", "Saludos", "Others", "AutoReaccion"]
+EXT_DEFAULT = ["Bot", "Registros", "Otros", "AutoReaccion"]
 
 print("<?> Ejecutado: config.py")

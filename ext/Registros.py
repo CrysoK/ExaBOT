@@ -2,7 +2,7 @@ import discord as ds
 from discord.ext import commands
 
 
-class Saludos(commands.Cog, name="Saludos"):
+class Registros(commands.Cog, name="Registros"):
     def __init__(self, bot):
         self.bot = bot
         self._last_member = None
@@ -29,7 +29,7 @@ class Saludos(commands.Cog, name="Saludos"):
 
 
 def setup(bot):
-    bot.add_cog(Saludos(bot))
+    bot.add_cog(Registros(bot))
 
 
-print("<?> Ejecutado: Saludos.py")
+print("<?> Ejecutado: Registros.py")
