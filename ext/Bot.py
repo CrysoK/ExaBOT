@@ -8,16 +8,12 @@ class Bot(commands.Cog, name="Bot"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
-        pass
-
     @commands.group(name="ext", invoke_without_command=True)
     async def _ext(self, ctx):
         """
         Controla las extensiones (solo owner)
         """
-        pass
+        await ctx.send_help("ext")
 
     @_ext.command(name="recargar", aliases=["r"])
     @commands.is_owner()
@@ -53,7 +49,7 @@ class Bot(commands.Cog, name="Bot"):
         """
         Utiliza funciones de Python (solo owner).
         """
-        pass
+        await ctx.send_help("python")
 
     @_py.command(name="eval")
     @commands.is_owner()
