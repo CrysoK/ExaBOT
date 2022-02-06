@@ -85,16 +85,11 @@ async def add_prefix(message, prefix):
     espacio.save()
 
 
-async def cambiar_presencia(bot):
+def cnt_humanos(guilds):
     total = 0
-    for guild in bot.guilds:
-        total += len([m for m in guild.members if not m.bot])
-    await bot.change_presence(
-        activity=ds.Activity(
-            type=ds.ActivityType.watching,
-            name=f"a {total} humanos",
-        ),
-    )
+    for g in guilds:
+        total += len([m for m in g.members if not m.bot])
+    return total
 
 
 # Devuelve un diccionario con todos los atributos de dir() y sus valores

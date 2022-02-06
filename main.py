@@ -21,7 +21,7 @@ from utils import (  # noqa E402
     ERRORES,
     get_prefix,
     array_natural,
-    cambiar_presencia,
+    cnt_humanos,
     attr2dict
 )
 # fmt: on
@@ -67,7 +67,13 @@ for ext in cfg.EXT_DEFAULT:
 @bot.event
 async def on_ready():
     print(f"Sesión iniciada como {bot.user} (ID: {bot.user.id})")
-    await cambiar_presencia(bot)
+    total = cnt_humanos(bot.guilds)
+    await bot.change_presence(
+        activity=ds.Activity(
+            type=ds.ActivityType.watching,
+            name=f"a {total} humanos",
+        ),
+    )
 
 
 @bot.event
