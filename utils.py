@@ -96,7 +96,7 @@ def cnt_humanos(guilds):
 def attr2dict(obj):
     ret = {}
     for a in dir(obj):
-        ret[a] = obj.__getattribute__(a)
+        ret[a] = getattr(obj, a)
     return ret
 
 
