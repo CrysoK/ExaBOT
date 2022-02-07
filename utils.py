@@ -92,6 +92,13 @@ def cnt_humanos(guilds):
     return total
 
 
+def cnt_bots(guilds):
+    total = 0
+    for g in guilds:
+        total += len([m for m in g.members if m.bot])
+    return total
+
+
 # Devuelve un diccionario con todos los atributos de dir() y sus valores
 def attr2dict(obj):
     ret = {}
