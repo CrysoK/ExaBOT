@@ -112,9 +112,13 @@ async def on_guild_remove(guild):
 async def on_command_error(ctx, error):
     # TODO: Traducir todos los errores.
     # await ctx.send(error)
-    await ctx.send(
-        ERRORES[error.__class__.__name__].format(**attr2dict(error))
-    )
+    print(error)  # debug
+    try:
+        await ctx.send(
+            ERRORES[error.__class__.__name__].format(**attr2dict(error))
+        )
+    except Exception as e:
+        print(e)  # debug
 
 
 # EJECUCIÓN ###################################################################
