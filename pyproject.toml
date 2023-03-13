@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "ExaBOT"
+version = "0.1.0"
+description = ""
+authors = ["CrysoK <contact@crysok.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+facebook-scraper = "^0.2.59"
+emoji = "^2.2.0"
+pymongo = "^4.3.2"
+mongoengine = "^0.24.2"
+python-dotenv = "^0.21.0"
+flask = "^2.2.3"
+py-cord = "^2.4.0"
+revchatgpt = "^3.3.4"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^5.0.4"
+black = "^22.10.0"
+debugpy = "^1.6.2"
+replit-python-lsp-server = {extras = ["yapf", "rope", "pyflakes"], version = "^1.5.9"}
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pyright]
+reportOptionalMemberAccess = false

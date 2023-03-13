@@ -1,0 +1,17 @@
+__pycache__
+.venv
+.vscode
+.env
+.mypy_cache
+.chatgpt_cache.json
+typings
+meta
+old
+
+# Replit
+.config
+venv
+.replit
+replit.nix
+.upm
+.breakpoints
