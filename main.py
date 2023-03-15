@@ -20,7 +20,7 @@ import mongoengine as mongo  # noqa E402
 from utils import (  # noqa E402
     ERRORES,
     array_natural,
-    cnt_humanos,
+    actualizar_presencia,
     attr2dict
 )
 
@@ -71,13 +71,7 @@ for ext in cfg.EXT_DEFAULT:
 @bot.event
 async def on_ready():
     print(f"Sesión iniciada como {bot.user} (ID: {bot.user.id})")
-    total = cnt_humanos(bot.guilds)
-    await bot.change_presence(
-        activity=ds.Activity(
-            type=ds.ActivityType.watching,
-            name=f"a {total} humanos",
-        ),
-    )
+    actualizar_presencia(bot)
 
 
 @bot.event

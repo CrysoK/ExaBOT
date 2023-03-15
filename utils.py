@@ -1,3 +1,4 @@
+import discord as ds
 from discord.ext import commands
 from colecciones import Espacios
 
@@ -10,6 +11,15 @@ from emoji import get_emoji_unicode_dict
 EMOJI_A = get_aliases_unicode_dict()
 EMOJI_U = get_emoji_unicode_dict("en")
 
+
+async def actualizar_presencia(bot):
+    total = cnt_humanos(bot.guilds)
+    await bot.change_presence(
+        activity=ds.Activity(
+            type=ds.ActivityType.watching,
+            name=f"a {total} humanos",
+        )
+    )
 
 def array_natural(array, separador=",", formato=""):
     """

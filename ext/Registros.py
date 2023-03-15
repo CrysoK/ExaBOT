@@ -12,7 +12,7 @@ from discord import (
     SlashCommandGroup,
 )
 from discord.ext.commands import Cog
-from utils import cnt_bots, cnt_humanos
+from utils import cnt_bots, cnt_humanos, actualizar_presencia
 
 # UTILIDADES ##################################################################
 
@@ -114,6 +114,7 @@ class Registros(Cog, name="Registros"):
     @Cog.listener()
     async def on_member_join(self, miembro):
         await saludo_evento(miembro, miembro.guild, "entrada")
+        await actualizar_presencia(self.bot)
 
     @Cog.listener()
     async def on_member_remove(self, miembro):
@@ -131,6 +132,7 @@ class Registros(Cog, name="Registros"):
             return await saludo_evento(miembro, miembro.guild, "ban")
         # No es expulsión ni ban
         await saludo_evento(miembro, miembro.guild, "salida")
+        await actualizar_presencia(self.bot)
 
     _saludos = SlashCommandGroup(
         "saludos",
