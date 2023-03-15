@@ -1,6 +1,5 @@
 import discord as ds
 from discord.ext import commands
-from discord.utils import utcnow
 
 from revChatGPT.V1 import AsyncChatbot
 import config as cfg
@@ -57,7 +56,7 @@ class GPT(commands.Cog):
                 "password": cfg.OPENAI_PASSWORD,
             }
         )
-        self.chatid = ""
+        self.msgid = 1
 
     async def ask(self, message: str) -> list[str]:
         print(f"[Prompt] {message}")
@@ -88,18 +87,43 @@ class GPT(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: ds.Message):
+        if message.author.bot or not self.bot.user.mentioned_in(message):
+            return
         # Responder si mencionan al bot
-        if not message.author.bot and self.bot.user.mentioned_in(message):
-            with message.channel.typing():
-                response_list = await self.ask(
-                    f"[Usuario {message.author.mention} - "
-                    + f"Canal {message.channel.name} - "  # type: ignore
-                    + utcnow().strftime(
-                        "%H:%M del %a, %d de %m del %Y (UTC)]\n"
-                    )
-                    + f"{message.content}"
+        with message.channel.typing():
+            prompt = "```\n"
+            if message.reference:
+                referenced = await message.channel.fetch_message(
+                    message.reference.message_id
                 )
-                await self.send_list(message.channel, response_list)
+                prompt += (
+                    f"id: {self.msgid}\n"
+                    + "tipo: mensaje referenciado "
+                    + f"por el mensaje {self.msgid + 1}\n"
+                    + f"autor: {referenced.author.mention}\n"
+                    + f"canal: {referenced.channel.name}\n"
+                    + referenced.created_at.strftime(
+                        "enviado: %H:%M %a %d %m %Y (UTC)\n"
+                    )
+                    + "```\n\n"
+                    + f"{referenced.content}\n\n"
+                    + "```\n"
+                )
+                self.msgid += 1
+            prompt += (
+                f"id: {self.msgid}\n"
+                + "tipo: mensaje principal\n"
+                + f"autor: {message.author.mention}\n"
+                + f"canal: {message.channel.name}\n"
+                + message.created_at.strftime(
+                    "enviado: %H:%M %a %d %m %Y (UTC)\n"
+                )
+                + "```\n\n"
+                + f"{message.content}\n"
+            )
+            self.msgid += 1
+            response_list = await self.ask(prompt)
+            await self.send_list(message.channel, response_list)
 
     _chat = ds.SlashCommandGroup("chat", "Configuración del chat con el bot.")
 
