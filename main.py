@@ -71,7 +71,7 @@ for ext in cfg.EXT_DEFAULT:
 @bot.event
 async def on_ready():
     print(f"Sesión iniciada como {bot.user} (ID: {bot.user.id})")
-    actualizar_presencia(bot)
+    await actualizar_presencia(bot)
 
 
 @bot.event
