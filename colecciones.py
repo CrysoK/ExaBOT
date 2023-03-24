@@ -12,6 +12,7 @@ from mongoengine import (
     URLField,
     DateTimeField,
     ListField,
+    DictField,
     DynamicField,
     EmbeddedDocumentField,
     EmbeddedDocumentListField,
@@ -137,6 +138,7 @@ class Espacios(Document):
     salida = EmbeddedDocumentListField(Saludo)
     kick = EmbeddedDocumentListField(Saludo)
     ban = EmbeddedDocumentListField(Saludo)
+    gpt_conv = DictField()
     # Cómo implementar los canales con restricciones?
 
 

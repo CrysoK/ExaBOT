@@ -2,7 +2,22 @@ import discord as ds
 from discord.ext import commands
 
 from revChatGPT.V1 import AsyncChatbot
+from colecciones import Espacios
 import config as cfg
+
+PROMPT_INICIAL_CABECERA = """```
+id: 0
+tipo: mensaje del sistema
+```\n\n"""
+
+PROMPT_INICIAL_POR_DEFECTO = """Quiero que actúes como un bot de Discord llamado {bot}.
+{bot} puede mantener conversaciones con múltiples usuarios a la vez.
+{bot} debe mencionar al usuario con quien interactúa.
+Los mensajes recibidos comenzarán con metadatos del mensaje en un bloque de código.
+{bot} puede usar todas las opciones de formato de Discord.
+{bot} debe escapar los caracteres de formato que necesiten aparecer textualmente en el mensaje enviado.
+{bot} iniciará ahora la conversación con un mensaje del estilo: "Hola, soy X. ¿En qué puedo ayudarte?".
+"""
 
 
 # Split the response into smaller chunks of no more than 1900
@@ -56,7 +71,6 @@ class GPT(commands.Cog):
                 "password": cfg.OPENAI_PASSWORD,
             }
         )
-        self.msgid = 1
 
     async def ask(self, message: str) -> list[str]:
         print(f"[Prompt] {message}")
@@ -66,42 +80,36 @@ class GPT(commands.Cog):
         print(f"[Respuesta] {raw_response}")
         return split_response(raw_response, char_limit=1900)
 
-    async def send_list(self, channel, message_list):
-        for message in message_list:
-            await channel.send(message)
-
-    async def start_prompt(self):
-        # Enviar prompt, si existe. Lo ideal sería indicar el ID de un mensaje
-        # que haga de prompt inicial + un canal donde vaya la respuesta
-        with open("prompt.txt", "r", encoding="utf-8") as f:
-            prompt = f.read()
-        channel = self.bot.get_channel(839288466931580948)
-        response_list = await self.ask(
-            prompt.format(bot=self.bot.user.mention)
-        )
-        await self.send_list(channel, response_list)
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        await self.start_prompt()
-
     @commands.Cog.listener()
     async def on_message(self, message: ds.Message):
         if message.author.bot or not self.bot.user.mentioned_in(message):
             return
         # Responder si mencionan al bot
         with message.channel.typing():
+            # Continúa la conversación
+            espacio = Espacios.objects(_id=message.guild.id).first()
+            try:
+                print(espacio.gpt_conv)
+                self.chatbot.conversation_id = espacio.gpt_conv["id"]
+                self.msg_cnt = espacio.gpt_conv["msg_cnt"]
+            except Exception as e:
+                print(e)
+                await message.reply(
+                    "Algo salió mal. Usa `/chat iniciar` y vuelve a intentarlo"
+                )
+                return
+            # Creación del prompt
             prompt = "```\n"
             if message.reference:
                 referenced = await message.channel.fetch_message(
-                    message.reference.message_id
+                    message.reference.message_id  # type: ignore
                 )
                 prompt += (
-                    f"id: {self.msgid}\n"
+                    f"id: {self.msg_cnt}\n"
                     + "tipo: mensaje referenciado "
-                    + f"por el mensaje {self.msgid + 1}\n"
+                    + f"por el mensaje {self.msg_cnt + 1}\n"
                     + f"autor: {referenced.author.mention}\n"
-                    + f"canal: {referenced.channel.name}\n"
+                    + f"canal: {referenced.channel.name}\n"  # type: ignore
                     + referenced.created_at.strftime(
                         "enviado: %H:%M %a %d %m %Y (UTC)\n"
                     )
@@ -109,30 +117,82 @@ class GPT(commands.Cog):
                     + f"{referenced.content}\n\n"
                     + "```\n"
                 )
-                self.msgid += 1
+                self.msg_cnt += 1
             prompt += (
-                f"id: {self.msgid}\n"
+                f"id: {self.msg_cnt}\n"
                 + "tipo: mensaje principal\n"
                 + f"autor: {message.author.mention}\n"
-                + f"canal: {message.channel.name}\n"
+                + f"canal: {message.channel.name}\n"  # type: ignore
                 + message.created_at.strftime(
                     "enviado: %H:%M %a %d %m %Y (UTC)\n"
                 )
                 + "```\n\n"
                 + f"{message.content}\n"
             )
-            self.msgid += 1
+            self.msg_cnt += 1
             response_list = await self.ask(prompt)
-            await self.send_list(message.channel, response_list)
+            espacio.gpt_conv["msg_cnt"] = self.msg_cnt
+            espacio.save()
+            for m in response_list:
+                await message.channel.send(m)
 
     _chat = ds.SlashCommandGroup("chat", "Configuración del chat con el bot.")
 
-    @_chat.command(name="reiniciar")
-    async def _reset(self, ctx: ds.ApplicationContext):
-        # await self.chatbot.delete_conversation(self.chatid)
+    @_chat.command(name="iniciar")
+    async def _start(self, ctx: ds.ApplicationContext):
+        await ctx.defer(invisible=True)
+        await ctx.respond("Iniciando...")
+        espacio = Espacios.objects(_id=ctx.guild_id).first()
+        try:
+            # Elimina conv previa
+            await self.chatbot.delete_conversation(espacio.gpt_conv["id"])
+        except Exception as e:
+            print(e)
         self.chatbot.reset_chat()
-        await ctx.respond('"Memoria" reiniciada')
-        await self.start_prompt()
+        # Cabecera del prompt inicial
+        prompt = PROMPT_INICIAL_CABECERA
+        try:
+            # Prompt inicial en un mensaje
+            prompt += (
+                await ctx.fetch_message(espacio.gpt_conv["prompt_inicial_id"])
+            ).content
+        except Exception as e:
+            print(e)
+            try:
+                # Prompt inicial en un archivo local
+                with open("prompt.txt", "r", encoding="utf-8") as f:
+                    prompt += f.read()
+            except Exception as e:
+                print(e)
+                # Prompt inicial por defecto
+                prompt += PROMPT_INICIAL_POR_DEFECTO
+        response_list = await self.ask(
+            prompt.format(bot=self.bot.user.mention)
+        )
+        # Guarda la nueva conversación (el id se genera al usar ask)
+        self.msg_cnt = 1
+        espacio.gpt_conv["id"] = self.chatbot.conversation_id
+        espacio.gpt_conv["msg_cnt"] = self.msg_cnt
+        espacio.save()
+
+        for m in response_list:
+            await ctx.respond(m)
+
+    @_chat.command(name="eliminar_prompt")
+    @commands.has_permissions(administrator=True)
+    async def _rm_prompt(self, ctx: ds.ApplicationContext):
+        espacio = Espacios.objects(_id=ctx.guild_id).first()
+        espacio.gpt_conv["prompt_inicial_id"] = None
+        espacio.save()
+        await ctx.respond("Prompt inicial eliminado")
+
+    @ds.message_command(name="Prompt inicial")
+    @commands.has_permissions(administrator=True)
+    async def _set_prompt(self, ctx: ds.ApplicationContext, msg: ds.Message):
+        espacio = Espacios.objects(_id=ctx.guild_id).first()
+        espacio.gpt_conv["prompt_inicial_id"] = msg.id
+        espacio.save()
+        await ctx.respond("Prompt inicial establecido")
 
 
 def setup(bot):
