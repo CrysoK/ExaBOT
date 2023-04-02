@@ -15,8 +15,7 @@ MONGODB_URI = os.environ["MONGODB_URI"]
 DB_NAME = os.environ["DB_NAME"]
 
 # ChatGPT
-OPENAI_EMAIL = os.getenv("OPENAI_EMAIL")
-OPENAI_PASSWORD = os.getenv("OPENAI_PASSWORD")
+OPENAI_ACCESS_TOKEN = os.getenv("OPENAI_ACCESS_TOKEN")
 
 # Carpeta de extensiones
 EXT = "ext"

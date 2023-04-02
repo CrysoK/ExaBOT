@@ -67,8 +67,7 @@ class GPT(commands.Cog):
         self.bot = bot
         self.chatbot = AsyncChatbot(
             config={
-                "email": cfg.OPENAI_EMAIL,
-                "password": cfg.OPENAI_PASSWORD,
+                "access_token": cfg.OPENAI_ACCESS_TOKEN,
             }
         )
 
