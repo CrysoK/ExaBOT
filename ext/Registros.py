@@ -122,6 +122,7 @@ class Registros(Cog, name="Registros"):
         await sleep(0.5)
         # Se busca desde 10 segundos antes
         desde = dt.datetime.utcnow() - dt.timedelta(seconds=10)
+        desde = desde.replace(tzinfo=dt.timezone.utc)
         # Se busca la expulsión
         registro = await registro_audit(miembro, AuditLogAction.kick, desde)
         if registro:
