@@ -36,11 +36,11 @@ def split_response(response, char_limit) -> list[str]:
         return result
     # Split the response if the code block exists
     parts = response.split("```")
-    for i in range(len(parts)):
+    for i, part in enumerate(parts):
         if i % 2 == 0:  # indices that are even are not code blocks
-            result.append(parts[i])
+            result.append(part)
         else:  # Odd-numbered parts are code blocks
-            code_block = parts[i].split("\n")
+            code_block = part.split("\n")
             formatted_code_block = ""
             for line in code_block:
                 while len(line) > char_limit:
