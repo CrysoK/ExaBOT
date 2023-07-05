@@ -4,19 +4,31 @@ from discord.ext import commands
 from revChatGPT.V1 import AsyncChatbot
 from colecciones import Espacios
 import config as cfg
+from utils.youtube import Video
 
 PROMPT_INICIAL_CABECERA = """```
 id: 0
 tipo: mensaje del sistema
 ```\n\n"""
 
-PROMPT_INICIAL_POR_DEFECTO = """Quiero que actúes como un bot de Discord llamado {bot}.
+PROMPT_INICIAL_POR_DEFECTO = """Quiero que actúes como un bot de Discord \
+llamado {bot}.
 {bot} puede mantener conversaciones con múltiples usuarios a la vez.
 {bot} debe mencionar al usuario con quien interactúa.
-Los mensajes recibidos comenzarán con metadatos del mensaje en un bloque de código.
+Los mensajes recibidos comenzarán con metadatos del mensaje en un bloque de \
+código.
 {bot} puede usar todas las opciones de formato de Discord.
-{bot} debe escapar los caracteres de formato que necesiten aparecer textualmente en el mensaje enviado.
-{bot} iniciará ahora la conversación con un mensaje del estilo: "Hola, soy X. ¿En qué puedo ayudarte?".
+{bot} debe escapar los caracteres de formato que necesiten aparecer \
+textualmente en el mensaje enviado.
+{bot} iniciará ahora la conversación con un mensaje del estilo: "Hola, soy X. \
+¿En qué puedo ayudarte?".
+"""
+
+PROMPT_RESUMEN_YT = """Para la siguiente transcripción automática de un \
+video de YouTube:
+- ¿Qué se dice el video sobre el título ({titulo})?
+- Escribe un resumen detallado del video.
+Transcripción: {texto}
 """
 
 
@@ -192,6 +204,31 @@ class GPT(commands.Cog):
         espacio.gpt_conv["prompt_inicial_id"] = msg.id
         espacio.save()
         await ctx.respond("Prompt inicial establecido")
+
+    _resumir = ds.SlashCommandGroup("resumir")
+
+    @_resumir.command(name="youtube")
+    async def _youtube(self, ctx: ds.ApplicationContext, enlace: str):
+        await ctx.defer()
+        self.chatbot.reset_chat()
+        with ctx.typing():
+            try:
+                video = Video(enlace)
+                prompt = PROMPT_RESUMEN_YT.format(
+                    titulo=video.titulo,
+                    texto=video.transcripcion(),
+                )
+                response_list = await self.ask(prompt)
+                for m in response_list:
+                    await ctx.respond(m)
+            except Exception as e:
+                print(e)
+                await ctx.respond(f"Los idiomas disponibles son: {e}")
+        if self.chatbot.conversation_id:
+            await self.chatbot.delete_conversation(
+                self.chatbot.conversation_id
+            )
+        self.chatbot.reset_chat()
 
 
 def setup(bot):
