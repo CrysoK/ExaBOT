@@ -14,6 +14,7 @@ python-dotenv = "^1.0.0"
 flask = "^2.3.2"
 py-cord = "^2.4.0"
 revchatgpt = "^6.7.3"
+youtube-transcript-api = "^0.6.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^5.0.4"
