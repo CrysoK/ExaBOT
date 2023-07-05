@@ -296,4 +296,4 @@ def setup(bot):
     bot.add_cog(Registros(bot))
 
 
-print("<?> Ejecutado: Registros.py")
+print("<?> Ejecutado: registros.py")

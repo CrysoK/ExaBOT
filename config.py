@@ -19,6 +19,6 @@ OPENAI_ACCESS_TOKEN = os.getenv("OPENAI_ACCESS_TOKEN")
 
 # Carpeta de extensiones
 EXT = "ext"
-EXT_DEFAULT = ["bot", "registros", "otros", "auto_reaccion", "gpt"]
+EXT_DEFAULT = ["bot", "registros", "otros", "auto_reaccion", "ia"]
 
 print("<?> Ejecutado: config.py")

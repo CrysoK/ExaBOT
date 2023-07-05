@@ -74,4 +74,4 @@ def setup(bot):
     bot.add_cog(Bot(bot))
 
 
-print("<?> Ejecutado: Bot.py")
+print("<?> Ejecutado: bot.py")
