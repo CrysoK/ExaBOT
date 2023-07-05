@@ -172,7 +172,7 @@ class IA(commands.Cog):
                     await ctx.respond(m)
             except Exception as e:
                 print(e)
-                await ctx.respond(f"Los idiomas disponibles son: {e}")
+                await ctx.respond(e)
         if self.chatgpt.conv_id:
             await self.chatgpt.eliminar_conv(self.chatgpt.conv_id)
         self.chatgpt.nueva_conv()
@@ -182,4 +182,4 @@ def setup(bot):
     bot.add_cog(IA(bot))
 
 
-print("<?> Ejecutado: GPT.py")
+print("<?> Ejecutado: ia.py")

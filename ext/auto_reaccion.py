@@ -81,4 +81,4 @@ def setup(bot):
     bot.add_cog(AutoReaccion(bot))
 
 
-print("<?> Ejecutado: AutoReaccion.py")
+print("<?> Ejecutado: auto_reaccion.py")

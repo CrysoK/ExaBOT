@@ -48,4 +48,4 @@ def setup(bot):
     bot.add_cog(Otros(bot))
 
 
-print("<?> Ejecutado: Otros.py")
+print("<?> Ejecutado: otros.py")
