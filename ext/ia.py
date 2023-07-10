@@ -27,10 +27,10 @@ textualmente en el mensaje enviado.
 ¿En qué puedo ayudarte?".
 """
 
-PROMPT_RESUMEN_YT = """Para la siguiente transcripción automática de un \
-video de YouTube:
-- ¿Qué se dice el video sobre el título ({titulo})?
-- Escribe un resumen detallado del video.
+PROMPT_RESUMEN_YT = """Para la siguiente transcripción de un video de YouTube:
+- ¿Qué se dice concretamente sobre el título ({titulo})?
+- ¿El título ({titulo}) es clickbait?
+- Escribe un resumen del video.
 Transcripción: {texto}
 """
 
