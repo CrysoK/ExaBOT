@@ -2,6 +2,7 @@
 
 # fmt: off
 import logging
+from math import e
 logging.basicConfig(level=logging.INFO)
 
 import sys  # noqa E402
@@ -16,6 +17,8 @@ load_dotenv(override=True)
 import config as cfg  # noqa E402
 
 import mongoengine as mongo  # noqa E402
+
+from colecciones import Espacios
 
 from utils import (  # noqa E402
     ERRORES,
@@ -75,8 +78,14 @@ async def on_ready():
 
 
 @bot.event
-async def on_message(message):
-    print(f"{message.author} en {message.channel}: {message.content}")
+async def on_guild_join(guild: ds.Guild):
+    espacio = Espacios.objects(_id=guild.id).first()
+    if not espacio:
+        espacio = Espacios(_id=guild.id)
+        espacio.save()
+        print(f'Espacio "{guild.name}" añadido a la base de datos')
+    else:
+        print(f'El espacio "{guild.name}" ya estaba en la base de datos')
 
 
 """
