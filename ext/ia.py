@@ -165,19 +165,18 @@ class IA(commands.Cog):
     async def _youtube(self, ctx: ds.ApplicationContext, enlace: str):
         await ctx.defer()
         self.chatgpt.nueva_conv()
-        with ctx.typing():
-            try:
-                video = Video(enlace)
-                prompt = PROMPT_RESUMEN_YT.format(
-                    titulo=video.titulo,
-                    texto=video.transcripcion(),
-                )
-                response_list = await self.chatgpt.preguntar(prompt)
-                for m in response_list:
-                    await ctx.respond(m)
-            except Exception as e:
-                print(e)
-                await ctx.respond(e)
+        try:
+            video = Video(enlace)
+            prompt = PROMPT_RESUMEN_YT.format(
+                titulo=video.titulo,
+                texto=video.transcripcion(),
+            )
+            response_list = await self.chatgpt.preguntar(prompt)
+            for m in response_list:
+                await ctx.respond(m)
+        except Exception as e:
+            print(e)
+            await ctx.respond(e)
         if self.chatgpt.conv_id:
             await self.chatgpt.eliminar_conv(self.chatgpt.conv_id)
         self.chatgpt.nueva_conv()
