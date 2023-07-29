@@ -113,9 +113,10 @@ class IA(commands.Cog):
         prompt = PROMPT_INICIAL_CABECERA
         try:
             # Prompt inicial en un mensaje
-            prompt += (
-                await ctx.fetch_message(espacio.gpt_conv["prompt_inicial_id"])
-            ).content
+            saved = espacio.gpt_conv["prompt_inicial"]
+            channel = await ctx.bot.fetch_channel(saved["channel"])
+            msg = await channel.fetch_message(saved["id"])  # type: ignore
+            prompt += msg.content
         except Exception as e:
             print(e)
             try:
@@ -142,7 +143,7 @@ class IA(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def _rm_prompt(self, ctx: ds.ApplicationContext):
         espacio = Espacios.objects(_id=ctx.guild_id).first()
-        espacio.gpt_conv["prompt_inicial_id"] = None
+        espacio.gpt_conv["prompt_inicial"] = None
         espacio.save()
         await ctx.respond("Prompt inicial eliminado")
 
@@ -150,7 +151,10 @@ class IA(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def _set_prompt(self, ctx: ds.ApplicationContext, msg: ds.Message):
         espacio = Espacios.objects(_id=ctx.guild_id).first()
-        espacio.gpt_conv["prompt_inicial_id"] = msg.id
+        espacio.gpt_conv["prompt_inicial"] = {
+            "id": msg.id,
+            "channel": msg.channel.id,
+        }
         espacio.save()
         await ctx.respond("Prompt inicial establecido")
 
