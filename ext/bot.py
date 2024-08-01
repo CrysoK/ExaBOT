@@ -1,4 +1,5 @@
 import os
+import subprocess
 import config as cfg
 import discord as ds
 from discord.ext import commands
@@ -49,9 +50,7 @@ class Bot(commands.Cog, name="Bot"):
         self.bot.unload_extension(f"{cfg.EXT}.{extensión}")
         await ctx.respond(f"Extensión {extensión} desactivada")
 
-    _py = ds.SlashCommandGroup(
-        "python", "Utiliza funciones de Python (solo owner)."
-    )
+    _py = ds.SlashCommandGroup("python", "Utiliza funciones de Python (solo owner).")
 
     @_py.command(name="eval")
     @commands.is_owner()
@@ -59,15 +58,28 @@ class Bot(commands.Cog, name="Bot"):
         """
         Python `eval` (solo owner).
         """
+        await ctx.defer()
         await ctx.respond(eval(código))
 
-    @_py.command(name="exec")
+    @_py.command(name="run")
     @commands.is_owner()
-    async def _py_exec(self, ctx: ds.ApplicationContext, código: str):
+    async def _py_run(self, ctx: ds.ApplicationContext, comando: str):
         """
-        Python `exec` (solo owner).
+        Python `subprocess.run` (solo owner).
         """
-        await ctx.respond(exec(código))
+        await ctx.defer()
+        s = subprocess.run(comando, shell=True, text=True, capture_output=True)
+        r = (
+            "STDOUT\n```shell\n" + s.stdout + "\n```\n"
+            if s.stdout
+            else "Sin salida en `stdout`.\n"
+        )
+        r += (
+            "STDERR\n```shell\n" + s.stderr + "\n```"
+            if s.stderr
+            else "Sin salida en `stderr`."
+        )
+        await ctx.respond(r)
 
 
 def setup(bot):
