@@ -1,9 +1,6 @@
-facebook-scraper==0.2.59
-emoji==2.11.1
-pymongo==4.8.0 
-mongoengine==0.27.0
-python-dotenv==1.0.1
-flask==2.3.3
 py-cord==2.6.0
-revchatgpt==6.8.6
+mongoengine==0.28.2
+pymongo==4.8.0 
+python-dotenv==1.0.1
+emoji==2.12.1
 youtube-transcript-api==0.6.2

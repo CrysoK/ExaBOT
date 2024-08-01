@@ -1,3 +1,4 @@
+from typing import List
 from revChatGPT.V1 import AsyncChatbot
 
 
@@ -6,7 +7,7 @@ class ChatGPT:
         self._client = AsyncChatbot(config=config)
         self.conv_id = self._client.conversation_id
 
-    async def preguntar(self, mensaje: str) -> list[str]:
+    async def preguntar(self, mensaje: str) -> List[str]:
         print(f"[Prompt] {mensaje}")
         respuesta = ""
         async for r in self._client.ask(mensaje):
@@ -24,12 +25,22 @@ class ChatGPT:
 
 # Split the response into smaller chunks of no more than 1900
 # characters each(Discord limit is 2000 per chunk)
-def split_response(response, char_limit) -> list[str]:
+def split_response(response, char_limit) -> List[str]:
+    """
+    Split the response into smaller chunks of no more than char_limit characters each.
+    If the response contains a code block, split it into chunks of no more than char_limit characters.
+    Return a list of response chunks.
+    """
     result = []
+    if response is None:
+        raise ValueError("Response cannot be None")
+    if char_limit is None:
+        raise ValueError("Char limit cannot be None")
+    if not isinstance(char_limit, int):
+        raise TypeError("Char limit must be an integer")
     if "```" not in response:
         response_chunks = [
-            response[i : i + char_limit]
-            for i in range(0, len(response), char_limit)
+            response[i : i + char_limit] for i in range(0, len(response), char_limit)
         ]
         for chunk in response_chunks:
             result.append(chunk)

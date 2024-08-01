@@ -27,8 +27,6 @@ from utils import (  # noqa E402
     attr2dict
 )
 
-from servidor import iniciar_servidor  # noqa E402
-
 # fmt: on
 
 # INICIALIZACIÓN ##############################################################
@@ -60,7 +58,7 @@ mongo.connect(db=cfg.DB_NAME, host=cfg.MONGODB_URI)
 bot = ds.Bot(
     command_prefix=["."],
     intents=ds.Intents.all(),
-    # debug_guilds=[839277844257570846],
+    debug_guilds=[839277844257570846],
 )
 
 # Cargar extensiones por defecto
@@ -101,9 +99,7 @@ async def on_command_error(ctx, error):
     # await ctx.send(error)
     print(error)  # debug
     try:
-        await ctx.send(
-            ERRORES[error.__class__.__name__].format(**attr2dict(error))
-        )
+        await ctx.respond(ERRORES[error.__class__.__name__].format(**attr2dict(error)))
     except Exception as e:
         print(e)  # debug
 
@@ -112,16 +108,13 @@ async def on_command_error(ctx, error):
 async def on_application_error(ctx, error):
     print(error)  # debug
     try:
-        await ctx.respond(
-            ERRORES[error.__class__.__name__].format(**attr2dict(error))
-        )
+        await ctx.respond(ERRORES[error.__class__.__name__].format(**attr2dict(error)))
     except Exception as e:
         print(e)  # debug
 
 
 # EJECUCIÓN ###################################################################
 
-iniciar_servidor()
 bot.run(cfg.BOT_TOKEN)
 
 print("<?> Ejecutado: main.py")

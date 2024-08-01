@@ -2,14 +2,7 @@ import discord as ds
 from discord.ext import commands
 from colecciones import Espacios
 
-# from emoji import EMOJI_ALIAS_UNICODE_ENGLISH as EMOJI_A
-from emoji import get_aliases_unicode_dict
-
-# from emoji import UNICODE_EMOJI_ENGLISH as EMOJI_U
-from emoji import get_emoji_unicode_dict
-
-EMOJI_A = get_aliases_unicode_dict()
-EMOJI_U = get_emoji_unicode_dict("en")
+from emoji import emoji_count
 
 
 async def actualizar_presencia(bot):
@@ -42,11 +35,8 @@ async def son_emojis(ctx, emojis):
     Validación de una lista de emojis
     """
     for e in emojis:
-        # Emoji UNICODE
-        if e in EMOJI_U:
-            continue
-        # Emoji alias
-        if e in EMOJI_A:
+        # Emoji UNICODE o alias (?)
+        if emoji_count(e) == 1:
             continue
         # Discord emoji (personalizados)
         try:
@@ -66,9 +56,7 @@ async def get_espacio(_id, nombre="<sin_nombre>"):
     espacio = Espacios.objects(_id=_id).first()
     if espacio is None:
         espacio = Espacios(_id=_id).save()
-        print(
-            f"Espacio {nombre} (ID: {_id}) " + "no encontrado. Se ha creado."
-        )
+        print(f"Espacio {nombre} (ID: {_id}) " + "no encontrado. Se ha creado.")
     return espacio
 
 
@@ -125,8 +113,7 @@ ERRORES = {
     "GuildNotFound": 'Espacio "{argument}" no encontrado.',
     "UserNotFound": 'Usuario "{argument}" no encontrado.',
     "MessageNotFound": 'Mensaje "{argument}" no encontrado.',
-    "ChannelNotReadable": "No se pueden leer los mensajes de "
-    + "{argument.mention}.",
+    "ChannelNotReadable": "No se pueden leer los mensajes de " + "{argument.mention}.",
     "ChannelNotFound": 'Canal "{argument}" no encontrado.',
     "BadColourArgument": 'El color "{argument}" es inválido.',
     "RoleNotFound": 'Rol "{argument}" no encontrado.',
@@ -145,13 +132,10 @@ ERRORES = {
     "CheckAnyFailure": "No tienes permisos para ejecutar este comando.",
     "PrivateMessageOnly": "Este comando solo puede ser usado en mensajes "
     + "privados.",
-    "NoPrivateMessage": "Este comando no puede ser usado en mensajes "
-    + "privados.",
+    "NoPrivateMessage": "Este comando no puede ser usado en mensajes " + "privados.",
     "NotOwner": "NotOwner: {args[0]}",
-    "MissingRole": "Se requiere el rol {missing_role} para ejecutar este "
-    + "comando.",
-    "BotMissingRole": "El bot requiere el rol {missing_rol} para ejecutar "
-    + "comando",
+    "MissingRole": "Se requiere el rol {missing_role} para ejecutar este " + "comando.",
+    "BotMissingRole": "El bot requiere el rol {missing_rol} para ejecutar " + "comando",
     # fmt debe definirse
     "MissingAnyRole": "Te falta al menos uno de los roles requeridos: {fmt}.",
     # fmt debe definirse
