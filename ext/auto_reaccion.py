@@ -35,10 +35,10 @@ class AutoReaccion(commands.Cog, name="AutoReacción"):
     ):
         """Activar las reacciones automáticas en un canal."""
         if not emoji:
-            return await ctx.respond("Error: debes indicar un emoji")
+            return await ctx.respond("**Error**: debes indicar un emoji")
         # Si hay algo, se revisa que sean emojis válidos
         if not await son_emojis(ctx, [emoji]):
-            raise commands.CommandError("Error: debes indicar un emoji válido")
+            return await ctx.respond("**Error**: debes indicar un emoji válido")
         # Si son válidos, se activa la función en el canal indicado
         canal_db = Canales.objects(_id=canal.id).first()
         if not canal_db:
@@ -58,9 +58,7 @@ class AutoReaccion(commands.Cog, name="AutoReacción"):
         )
 
     @_autoreaccion.command(name="eliminar")
-    async def _eliminar(
-        self, ctx: ds.ApplicationContext, canal: ds.TextChannel
-    ):
+    async def _eliminar(self, ctx: ds.ApplicationContext, canal: ds.TextChannel):
         """
         Desactivar las reacciones automáticas en un canal.
         """
