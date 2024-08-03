@@ -1,3 +1,4 @@
+from typing import Union
 import discord as ds
 from discord.ext import commands
 
@@ -27,10 +28,11 @@ class AutoReaccion(commands.Cog, name="AutoReacción"):
     )
 
     @_autoreaccion.command(name="añadir", ephemeral=True)
+    @commands.has_permissions(manage_channels=True)
     async def _añadir(
         self,
         ctx: ds.ApplicationContext,
-        canal: ds.TextChannel,
+        canal: Union[ds.TextChannel, ds.Thread],
         emoji: str,
     ):
         """Activar las reacciones automáticas en un canal."""
@@ -58,6 +60,7 @@ class AutoReaccion(commands.Cog, name="AutoReacción"):
         )
 
     @_autoreaccion.command(name="eliminar")
+    @commands.has_permissions(manage_channels=True)
     async def _eliminar(self, ctx: ds.ApplicationContext, canal: ds.TextChannel):
         """
         Desactivar las reacciones automáticas en un canal.
