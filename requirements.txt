@@ -4,3 +4,5 @@ pymongo==4.8.0
 python-dotenv==1.0.1
 emoji==2.12.1
 youtube-transcript-api==0.6.2
+pydantic==1.10.17 # >=2 usa Rust (evitar)
+openai # Usa pydantic
