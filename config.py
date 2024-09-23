@@ -17,6 +17,9 @@ DB_NAME = os.environ["DB_NAME"]
 # ChatGPT
 OPENAI_ACCESS_TOKEN = os.getenv("OPENAI_ACCESS_TOKEN")
 
+# Monitoreo (BetterStack)
+HEARTBEAT_URL = os.environ["HEARTBEAT_URL"]
+
 # Carpeta de extensiones
 EXT = "ext"
 EXT_DEFAULT = [

@@ -9,7 +9,7 @@ import sys  # noqa E402
 sys.path.append("config.py")
 
 import discord as ds  # noqa E402
-from discord.ext import commands  # noqa E402
+from discord.ext import commands, tasks  # noqa E402
 
 from dotenv import load_dotenv  # noqa E402
 load_dotenv(override=True)
@@ -19,6 +19,8 @@ import config as cfg  # noqa E402
 import mongoengine as mongo  # noqa E402
 
 from colecciones import Espacios
+
+import requests
 
 from utils import (  # noqa E402
     ERRORES,
@@ -66,12 +68,49 @@ for ext in cfg.EXT_DEFAULT:
     bot.load_extension(f"{cfg.EXT}.{ext}")
 
 
+# MONITOREO ###################################################################
+
+
+@tasks.loop(minutes=5, reconnect=False)
+async def heartbeat():
+    if bot.is_closed():
+        # La conexión a Discord está cerrada.
+        heartbeat.stop()
+    with requests.post(cfg.HEARTBEAT_URL) as r:
+        if r.status_code == 200:
+            print("Heartbeat enviado.")
+        else:
+            print(f"Error al enviar heartbeat: {r.status_code}")
+
+
+@heartbeat.before_loop
+async def before_heartbeat():
+    await bot.wait_until_ready()
+
+
+@heartbeat.after_loop
+async def after_heartbeat():
+    if bot.is_closed() or heartbeat.is_being_cancelled():
+        # La conexión a Discord está cerrada o el loop ha sido cancelado (por
+        # ejemplo al finalizar el bot).
+        url = cfg.HEARTBEAT_URL + "/fail"
+        with requests.post(url, data="Heartbeat loop finalizado") as r:
+            if r.status_code == 200:
+                print("Terminación notificada.")
+            else:
+                print(f"Error al notificar terminación: {r.status_code}")
+    else:
+        # La conexión se restableció (?)
+        heartbeat.start()
+
+
 # EVENTOS #####################################################################
 
 
 @bot.event
 async def on_ready():
     print(f"Sesión iniciada como {bot.user} (ID: {bot.user.id})")
+    heartbeat.start()
     await actualizar_presencia(bot)
 
 
