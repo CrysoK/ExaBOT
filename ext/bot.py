@@ -4,6 +4,10 @@ import config as cfg
 import discord as ds
 from discord.ext import commands
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Bot(commands.Cog, name="Bot"):
     def __init__(self, bot: commands.Bot):
@@ -86,4 +90,4 @@ def setup(bot):
     bot.add_cog(Bot(bot))
 
 
-print("<?> Ejecutado: bot.py")
+logger.info("Ejecutado: bot.py")

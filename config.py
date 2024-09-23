@@ -1,6 +1,9 @@
 # NO MODIFICABLE ##############################################################
 
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 # MODIFICABLE #################################################################
 
@@ -30,4 +33,4 @@ EXT_DEFAULT = [
     # "ia"  # No disponible por el momento
 ]
 
-print("<?> Ejecutado: config.py")
+logger.info("Ejecutado: config.py")

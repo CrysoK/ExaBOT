@@ -1,6 +1,10 @@
 from typing import List
 from revChatGPT.V1 import AsyncChatbot
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class ChatGPT:
     def __init__(self, config):
@@ -8,11 +12,11 @@ class ChatGPT:
         self.conv_id = self._client.conversation_id
 
     async def preguntar(self, mensaje: str) -> List[str]:
-        print(f"[Prompt] {mensaje}")
+        logger.debug(f"[Prompt] {mensaje}")
         respuesta = ""
         async for r in self._client.ask(mensaje):
             respuesta = r["message"]
-        print(f"[Respuesta] {respuesta}")
+        logger.debug(f"[Respuesta] {respuesta}")
         self.conv_id = self._client.conversation_id
         return split_response(respuesta, char_limit=1900)
 

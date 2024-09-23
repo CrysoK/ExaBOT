@@ -4,6 +4,10 @@ from colecciones import Espacios
 
 from emoji import emoji_count
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 async def actualizar_presencia(bot):
     total = cnt_humanos(bot.guilds)
@@ -56,7 +60,7 @@ async def get_espacio(_id, nombre="<sin_nombre>"):
     espacio = Espacios.objects(_id=_id).first()
     if espacio is None:
         espacio = Espacios(_id=_id).save()
-        print(f"Espacio {nombre} (ID: {_id}) " + "no encontrado. Se ha creado.")
+        logger.info(f"Espacio {nombre} (ID: {_id}) " + "no encontrado. Se ha creado.")
     return espacio
 
 

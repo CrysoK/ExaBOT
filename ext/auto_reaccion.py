@@ -4,8 +4,11 @@ from discord.ext import commands
 
 from utils import son_emojis
 
-
 from colecciones import Canales, AutoReacciones
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AutoReaccion(commands.Cog, name="AutoReacción"):
@@ -82,4 +85,4 @@ def setup(bot):
     bot.add_cog(AutoReaccion(bot))
 
 
-print("<?> Ejecutado: auto_reaccion.py")
+logger.info("<?> Ejecutado: auto_reaccion.py")

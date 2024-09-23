@@ -2,8 +2,10 @@
 
 # fmt: off
 import logging
-from math import e
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    format="[%(asctime)s %(levelname)s %(name)s] %(message)s", level=logging.INFO
+)
+logger = logging.getLogger("main")
 
 import sys  # noqa E402
 sys.path.append("config.py")
@@ -78,9 +80,9 @@ async def heartbeat():
         heartbeat.stop()
     with requests.post(cfg.HEARTBEAT_URL) as r:
         if r.status_code == 200:
-            print("Heartbeat enviado.")
+            logger.info("Heartbeat enviado.")
         else:
-            print(f"Error al enviar heartbeat: {r.status_code}")
+            logger.error(f"Error al enviar heartbeat: {r.status_code}")
 
 
 @heartbeat.before_loop
@@ -96,9 +98,9 @@ async def after_heartbeat():
         url = cfg.HEARTBEAT_URL + "/fail"
         with requests.post(url, data="Heartbeat loop finalizado") as r:
             if r.status_code == 200:
-                print("Terminación notificada.")
+                logger.info("Terminación notificada.")
             else:
-                print(f"Error al notificar terminación: {r.status_code}")
+                logger.error(f"Error al notificar terminación: {r.status_code}")
     else:
         # La conexión se restableció (?)
         heartbeat.start()
@@ -109,7 +111,7 @@ async def after_heartbeat():
 
 @bot.event
 async def on_ready():
-    print(f"Sesión iniciada como {bot.user} (ID: {bot.user.id})")
+    logger.info(f"Sesión iniciada como {bot.user} (ID: {bot.user.id})")
     heartbeat.start()
     await actualizar_presencia(bot)
 
@@ -120,9 +122,9 @@ async def on_guild_join(guild: ds.Guild):
     if not espacio:
         espacio = Espacios(_id=guild.id)
         espacio.save()
-        print(f'Espacio "{guild.name}" añadido a la base de datos')
+        logger.info(f'Espacio "{guild.name}" añadido a la base de datos')
     else:
-        print(f'El espacio "{guild.name}" ya estaba en la base de datos')
+        logger.info(f'El espacio "{guild.name}" ya estaba en la base de datos')
 
 
 """
@@ -136,26 +138,26 @@ Respuesta: comando
 async def on_command_error(ctx, error):
     # TODO: Traducir todos los errores.
     # await ctx.send(error)
-    print(error)  # debug
+    logger.debug(error)  # debug
     try:
         await ctx.respond(ERRORES[error.__class__.__name__].format(**attr2dict(error)))
     except Exception as e:
-        print(e)  # debug
+        logger.debug(e)  # debug
 
 
 @bot.event
 async def on_application_error(ctx, error):
-    print(error)  # debug
+    logger.debug(error)  # debug
     try:
         await ctx.respond(ERRORES[error.__class__.__name__].format(**attr2dict(error)))
     except Exception as e:
-        print(e)  # debug
+        logger.debug(e)  # debug
 
 
 # EJECUCIÓN ###################################################################
 
 bot.run(cfg.BOT_TOKEN)
 
-print("<?> Ejecutado: main.py")
+logger.info("Ejecutado: main.py")
 
 # EOF #########################################################################

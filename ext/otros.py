@@ -1,6 +1,10 @@
 import discord as ds
 from discord.ext import commands
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Otros(commands.Cog, name="Otros"):
     def __init__(self, bot):
@@ -48,4 +52,4 @@ def setup(bot):
     bot.add_cog(Otros(bot))
 
 
-print("<?> Ejecutado: otros.py")
+logger.info("Ejecutado: otros.py")

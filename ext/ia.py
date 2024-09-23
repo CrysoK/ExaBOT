@@ -9,6 +9,10 @@ from colecciones import Espacios
 from utils.youtube import Video
 from utils.chatgpt import ChatGPT
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 PROMPT_INICIAL_CABECERA = """```
 id: 0
 tipo: mensaje del sistema
@@ -50,11 +54,11 @@ class IA(commands.Cog):
             # Continúa la conversación
             espacio = Espacios.objects(_id=message.guild.id).first()
             try:
-                print(espacio.gpt_conv)
+                logger.debug(espacio.gpt_conv)
                 self.chatgpt.conv_id = espacio.gpt_conv["id"]
                 self.msg_cnt = espacio.gpt_conv["msg_cnt"]
             except Exception as e:
-                print(e)
+                logger.error(e)
                 await message.reply(
                     "Algo salió mal. Usa `/chat iniciar` y vuelve a intentarlo"
                 )
@@ -84,9 +88,7 @@ class IA(commands.Cog):
                 + "tipo: mensaje principal\n"
                 + f"autor: {message.author.mention}\n"
                 + f"canal: {message.channel.name}\n"  # type: ignore
-                + message.created_at.strftime(
-                    "enviado: %H:%M %a %d %m %Y (UTC)\n"
-                )
+                + message.created_at.strftime("enviado: %H:%M %a %d %m %Y (UTC)\n")
                 + "```\n\n"
                 + f"{message.content}\n"
             )
@@ -108,7 +110,7 @@ class IA(commands.Cog):
             # Elimina conv previa
             await self.chatgpt.eliminar_conv(espacio.gpt_conv["id"])
         except Exception as e:
-            print(e)
+            logger.error(e)
         self.chatgpt.nueva_conv()
         # Cabecera del prompt inicial
         prompt = PROMPT_INICIAL_CABECERA
@@ -119,13 +121,13 @@ class IA(commands.Cog):
             msg = await channel.fetch_message(saved["id"])  # type: ignore
             prompt += msg.content
         except Exception as e:
-            print(e)
+            logger.error(e)
             try:
                 # Prompt inicial en un archivo local
                 with open("prompt.txt", "r", encoding="utf-8") as f:
                     prompt += f.read()
             except Exception as e:
-                print(e)
+                logger.error(e)
                 # Prompt inicial por defecto
                 prompt += PROMPT_INICIAL_POR_DEFECTO
         response_list = await self.chatgpt.preguntar(
@@ -175,7 +177,7 @@ class IA(commands.Cog):
             for m in response_list:
                 await ctx.respond(m)
         except Exception as e:
-            print(e)
+            logger.error(e)
             await ctx.respond(e)
         if self.chatgpt.conv_id:
             await self.chatgpt.eliminar_conv(self.chatgpt.conv_id)
@@ -186,4 +188,4 @@ def setup(bot):
     bot.add_cog(IA(bot))
 
 
-print("<?> Ejecutado: ia.py")
+logger.info("<?> Ejecutado: ia.py")

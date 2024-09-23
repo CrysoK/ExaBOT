@@ -14,6 +14,10 @@ from discord import (
 from discord.ext.commands import Cog
 from utils import cnt_bots, cnt_humanos, actualizar_presencia
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 # UTILIDADES ##################################################################
 
 
@@ -159,8 +163,7 @@ class Registros(Cog, name="Registros"):
 
     _kick = _saludos.create_subgroup(
         "expulsión",
-        "Añade y elimina mensajes para cuando alguien es expulsado del "
-        "espacio.",
+        "Añade y elimina mensajes para cuando alguien es expulsado del " "espacio.",
     )
 
     _ban = _saludos.create_subgroup(
@@ -198,9 +201,7 @@ class Registros(Cog, name="Registros"):
                     + f"Canal` <#{saludo.canal}>\n"
                 )
                 if usuario:
-                    mensaje += reemplazar_claves(
-                        saludo.texto, usuario, ctx.guild
-                    )
+                    mensaje += reemplazar_claves(saludo.texto, usuario, ctx.guild)
                 else:
                     mensaje += saludo.texto
                 mensaje += "\n\n"
@@ -296,4 +297,4 @@ def setup(bot):
     bot.add_cog(Registros(bot))
 
 
-print("<?> Ejecutado: registros.py")
+logger.info("Ejecutado: registros.py")
