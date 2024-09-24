@@ -80,7 +80,7 @@ async def heartbeat():
         heartbeat.stop()
     with requests.post(cfg.HEARTBEAT_URL) as r:
         if r.status_code == 200:
-            logger.info("Heartbeat enviado.")
+            logger.debug("Heartbeat enviado.")
         else:
             logger.error(f"Error al enviar heartbeat: {r.status_code}")
 
