@@ -70,16 +70,15 @@ async def before_heartbeat():
 
 @heartbeat.after_loop
 async def after_heartbeat():
-    if (bot.is_closed() or heartbeat.is_being_cancelled()) and not cfg.DEBUG_GUILDS:
-        # La conexión a Discord está cerrada o el loop ha sido cancelado (por
-        # ejemplo al finalizar el bot). No notificar si se está depurando.
+    if bot.is_closed() and not cfg.DEBUG_GUILDS:
+        # La conexión a Discord está cerrada. No notificar si se está depurando.
         url = cfg.HEARTBEAT_URL + "/fail"
         with requests.post(url, data="Heartbeat loop finalizado") as r:
             if r.status_code == 200:
                 logger.info("Terminación notificada.")
             else:
                 logger.error(f"Error al notificar terminación: {r.status_code}")
-    else:
+    elif not heartbeat.is_being_cancelled():
         # La conexión se restableció (?)
         heartbeat.start()
 
