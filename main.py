@@ -24,7 +24,6 @@ from utils import (  # noqa E402
     actualizar_presencia,
     attr2dict
 )
-
 # fmt: on
 
 # INICIALIZACIÓN ##############################################################
@@ -38,25 +37,10 @@ class Ayuda(commands.DefaultHelpCommand):
 # Conexión a la base de datos.
 mongo.connect(db=cfg.DB_NAME, host=cfg.MONGODB_URI)
 
-# bot = commands.Bot(
-#     command_prefix=["."],
-#     # Intents de Discord para el bot.
-#     intents=ds.Intents.all(),
-#     # help_command=Ayuda(
-#     #     commands_heading="Comandos",
-#     #     aliases_heading="Alias",
-#     #     no_category="Sin categoría",
-#     #     command_attrs={
-#     #         "name": "ayuda",
-#     #         "aliases": ["help", "h", "comandos", "cmds", "cmd"],
-#     #     },
-#     # ),
-# )
-
 bot = ds.Bot(
     command_prefix=["."],
     intents=ds.Intents.all(),
-    debug_guilds=[839277844257570846],
+    debug_guilds=cfg.DEBUG_GUILDS,
 )
 
 # Cargar extensiones por defecto
@@ -86,9 +70,9 @@ async def before_heartbeat():
 
 @heartbeat.after_loop
 async def after_heartbeat():
-    if bot.is_closed() or heartbeat.is_being_cancelled():
+    if (bot.is_closed() or heartbeat.is_being_cancelled()) and not cfg.DEBUG_GUILDS:
         # La conexión a Discord está cerrada o el loop ha sido cancelado (por
-        # ejemplo al finalizar el bot).
+        # ejemplo al finalizar el bot). No notificar si se está depurando.
         url = cfg.HEARTBEAT_URL + "/fail"
         with requests.post(url, data="Heartbeat loop finalizado") as r:
             if r.status_code == 200:

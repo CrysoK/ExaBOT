@@ -32,6 +32,15 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", logging.INFO)
 
 logging.basicConfig(format=LOG_FORMAT, level=LOG_LEVEL)
 
+DEBUG_GUILDS = None
+try:
+    DEBUG_GUILDS = [int(x.strip()) for x in os.environ["DEBUG_GUILDS"].split(",")]
+    logger.info("DEBUG_GUILDS activo. No se registrarán comandos globalmente.")
+except ValueError:
+    logger.error("Valor inválido en la variable de entorno DEBUG_GUILDS.")
+except KeyError:
+    logger.info("No se indicaron espacios para depuración.")
+
 # Carpeta de extensiones
 EXT = "ext"
 EXT_DEFAULT = [
