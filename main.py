@@ -1,22 +1,16 @@
 # DEPENDENCIAS ################################################################
 
 # fmt: off
-import logging
-logging.basicConfig(
-    format="[%(asctime)s %(levelname)s %(name)s] %(message)s", level=logging.INFO
-)
-logger = logging.getLogger("main")
-
-import sys  # noqa E402
-sys.path.append("config.py")
-
-import discord as ds  # noqa E402
-from discord.ext import commands, tasks  # noqa E402
-
 from dotenv import load_dotenv  # noqa E402
 load_dotenv(override=True)
 
 import config as cfg  # noqa E402
+
+import logging
+logger = logging.getLogger("main")
+
+import discord as ds  # noqa E402
+from discord.ext import commands, tasks  # noqa E402
 
 import mongoengine as mongo  # noqa E402
 
@@ -95,6 +89,7 @@ async def after_heartbeat():
     if bot.is_closed() or heartbeat.is_being_cancelled():
         # La conexión a Discord está cerrada o el loop ha sido cancelado (por
         # ejemplo al finalizar el bot).
+        return
         url = cfg.HEARTBEAT_URL + "/fail"
         with requests.post(url, data="Heartbeat loop finalizado") as r:
             if r.status_code == 200:

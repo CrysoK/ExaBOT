@@ -23,6 +23,15 @@ OPENAI_ACCESS_TOKEN = os.getenv("OPENAI_ACCESS_TOKEN")
 # Monitoreo (BetterStack)
 HEARTBEAT_URL = os.environ["HEARTBEAT_URL"]
 
+# No incluir timestamp en logs
+NO_TIMESTAMPS = os.getenv("NO_TIMESTAMPS")
+LOG_FORMAT = (
+    f"[{'' if NO_TIMESTAMPS else '%(asctime)s '}%(levelname)s %(name)s] %(message)s"
+)
+LOG_LEVEL = os.getenv("LOG_LEVEL", logging.INFO)
+
+logging.basicConfig(format=LOG_FORMAT, level=LOG_LEVEL)
+
 # Carpeta de extensiones
 EXT = "ext"
 EXT_DEFAULT = [
