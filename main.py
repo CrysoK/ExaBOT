@@ -89,7 +89,6 @@ async def after_heartbeat():
     if bot.is_closed() or heartbeat.is_being_cancelled():
         # La conexión a Discord está cerrada o el loop ha sido cancelado (por
         # ejemplo al finalizar el bot).
-        return
         url = cfg.HEARTBEAT_URL + "/fail"
         with requests.post(url, data="Heartbeat loop finalizado") as r:
             if r.status_code == 200:
