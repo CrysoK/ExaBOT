@@ -19,19 +19,20 @@ async def actualizar_presencia(bot):
     )
 
 
-def array_natural(array, separador=",", formato=""):
+def array_natural(array, formato=""):
     """
     Devuelve una representación en lenguaje natural de un array, ejemplo: `"1,
     2 y 3"`. `formato` puede ser, por ejemplo, `"**"` para que cada elemento
     salga en negrita.
     """
-    s = separador
+    if not array:
+        return ""
     f = formato
-    r = f"{f}{array[0]}{f}"
-    for e in array[1:-1]:
-        r += f"{s} {f}{e}{f}"
-    r += f" y {f}{array[-1]}{f}"
-    return r
+    array_f = [f"{formato}{elem}{formato}" for elem in array]
+    if len(array_f) == 1:
+        return array_f[0]
+    else:
+        return ", ".join(array_f[:-1]) + " y " + array_f[-1]
 
 
 async def son_emojis(ctx, emojis):
