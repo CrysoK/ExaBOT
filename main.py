@@ -53,8 +53,9 @@ for ext in cfg.EXT_DEFAULT:
 
 @tasks.loop(minutes=5, reconnect=False)
 async def heartbeat():
-    if bot.is_closed():
-        # La conexión a Discord está cerrada.
+    if bot.is_closed():  # La conexión a Discord está cerrada.
+        if not cfg.DEBUG_GUILDS:  # No notificar si se está depurando.
+            notify_dc()
         heartbeat.stop()
     with requests.post(cfg.HEARTBEAT_URL) as r:
         if r.status_code == 200:
@@ -63,24 +64,13 @@ async def heartbeat():
             logger.error(f"Error al enviar heartbeat: {r.status_code}")
 
 
-@heartbeat.before_loop
-async def before_heartbeat():
-    await bot.wait_until_ready()
-
-
-@heartbeat.after_loop
-async def after_heartbeat():
-    if bot.is_closed() and not cfg.DEBUG_GUILDS:
-        # La conexión a Discord está cerrada. No notificar si se está depurando.
-        url = cfg.HEARTBEAT_URL + "/fail"
-        with requests.post(url, data="Heartbeat loop finalizado") as r:
-            if r.status_code == 200:
-                logger.info("Terminación notificada.")
-            else:
-                logger.error(f"Error al notificar terminación: {r.status_code}")
-    elif not heartbeat.is_being_cancelled():
-        # La conexión se restableció (?)
-        heartbeat.start()
+def notify_dc():
+    url = cfg.HEARTBEAT_URL + "/fail"
+    with requests.post(url, data="Conexión al WS de Discord perdida.") as r:
+        if r.status_code == 200:
+            logger.info("Desconexión notificada.")
+        else:
+            logger.error(f"Error al notificar desconexión: {r.status_code}")
 
 
 # EVENTOS #####################################################################
@@ -89,7 +79,13 @@ async def after_heartbeat():
 @bot.event
 async def on_ready():
     logger.info(f"Sesión iniciada como {bot.user} (ID: {bot.user.id})")
-    heartbeat.start()
+    heartbeat.start()  # Iniciar monitoreo al iniciar sesión
+    await actualizar_presencia(bot)
+
+
+@bot.event
+async def on_resume():
+    heartbeat.start()  # Reiniciar monitoreo al reconectarse
     await actualizar_presencia(bot)
 
 
