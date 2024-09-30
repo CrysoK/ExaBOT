@@ -79,14 +79,22 @@ def notify_dc():
 @bot.event
 async def on_ready():
     logger.info(f"Sesión iniciada como {bot.user} (ID: {bot.user.id})")
-    heartbeat.start()  # Iniciar monitoreo al iniciar sesión
-    await actualizar_presencia(bot)
+    try:
+        heartbeat.start()  # Iniciar monitoreo al iniciar sesión
+    except Exception as e:
+        logger.error(e)
+    finally:
+        await actualizar_presencia(bot)
 
 
 @bot.event
 async def on_resume():
-    heartbeat.start()  # Reiniciar monitoreo al reconectarse
-    await actualizar_presencia(bot)
+    try:  # Reiniciar monitoreo al reconectarse
+        heartbeat.start()
+    except Exception as e:  # Podría nunca haberse detenido
+        logger.error(e)
+    finally:
+        await actualizar_presencia(bot)
 
 
 @bot.event
