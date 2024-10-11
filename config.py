@@ -21,7 +21,7 @@ DB_NAME = os.environ["DB_NAME"]
 OPENAI_ACCESS_TOKEN = os.getenv("OPENAI_ACCESS_TOKEN")
 
 # Monitoreo (BetterStack)
-HEARTBEAT_URL = os.environ["HEARTBEAT_URL"]
+HEARTBEAT_URL = os.getenv("HEARTBEAT_URL", "")
 
 # No incluir timestamp en logs
 NO_TIMESTAMPS = os.getenv("NO_TIMESTAMPS")
