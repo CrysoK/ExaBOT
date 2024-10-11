@@ -50,7 +50,7 @@ El desarrollo de nuevas funciones se puede seguir [aquí](https://github.com/use
     - `BOT_TOKEN`: El token del bot de Discord.
     - `MONGODB_URI`: La URI de conexión a la base de datos MongoDB.
     - `DB_NAME`: El nombre de la base de datos.
-    - `HEARTBEAT_URL`: La URL para enviar heartbeats.
+    - `HEARTBEAT_URL`: (Opcional) La URL para enviar heartbeats.
     - `DEBUG_GUILDS`: (Opcional) Lista de IDs separados por coma de espacios de
       Discord donde se registrarán los comandos durante el desarrollo.
     - `LOG_LEVEL`: (Opcional) Nivel de registro. Por defecto `INFO`.
