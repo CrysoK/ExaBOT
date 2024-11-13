@@ -51,26 +51,17 @@ for ext in cfg.EXT_DEFAULT:
 # MONITOREO ###################################################################
 
 
-@tasks.loop(minutes=5, reconnect=False)
+@tasks.loop(minutes=5)
 async def heartbeat():
-    if bot.is_closed():  # La conexión a Discord está cerrada.
-        if not cfg.DEBUG_GUILDS:  # No notificar si se está depurando.
-            notify_dc()
-        heartbeat.stop()
-    with requests.post(cfg.HEARTBEAT_URL) as r:
-        if r.status_code == 200:
-            logger.debug("Heartbeat enviado.")
-        else:
-            logger.error(f"Error al enviar heartbeat: {r.status_code}")
-
-
-def notify_dc():
-    url = cfg.HEARTBEAT_URL + "/fail"
-    with requests.post(url, data="Conexión al WS de Discord perdida.") as r:
-        if r.status_code == 200:
-            logger.info("Desconexión notificada.")
-        else:
-            logger.error(f"Error al notificar desconexión: {r.status_code}")
+    if bot.is_closed():
+        logger.error("La conexión a Discord está cerrada")
+        return
+    r = requests.post(cfg.HEARTBEAT_URL)
+    if r.status_code == 200:
+        logger.debug("Heartbeat enviado.")
+    else:
+        logger.error(f"Error al enviar heartbeat: {r.status_code}")
+    r.close()
 
 
 # EVENTOS #####################################################################
@@ -89,11 +80,6 @@ async def on_ready():
 
 @bot.event
 async def on_resume():
-    if cfg.HEARTBEAT_URL:
-        try:  # Reiniciar monitoreo al reconectarse
-            heartbeat.start()
-        except Exception as e:  # Podría nunca haberse detenido
-            logger.error(e)
     await actualizar_presencia(bot)
 
 
