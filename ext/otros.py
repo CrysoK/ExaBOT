@@ -23,42 +23,16 @@ class Otros(commands.Cog, name="Otros"):
     async def crear_materia(
         self,
         ctx: ds.ApplicationContext,
-        materia: str,
-        carreras: str,
-        categoria: Optional[ds.CategoryChannel],
+        foro: ds.ForumChannel,
+        nombre: str,
+        otros_nombres: str,
     ):
-        """Crea un foro para una materia y los posts por defecto.
-        `carreras` debe ser una lista de roles separados por coma.
+        """Crea una materia (post) dentro de un foro.
+        Los nombres alternativos van en el cuerpo del post.
         """
         await ctx.defer()
-        carreras_l = [
-            ds_get(ctx.guild.roles, name=x)
-            for x in [x.strip() for x in carreras.split(",")]
-        ]
-        permisos = {}
-        if not categoria or len(carreras_l) > 1:
-            # Se deben establecer permisos particulares para el canal
-            permisos[ctx.guild.default_role] = ds.PermissionOverwrite(
-                read_messages=False
-            )
-            for c in carreras_l:
-                permisos[c] = ds.PermissionOverwrite(read_messages=True)
-        foro = await ctx.guild.create_forum_channel(
-            name=materia,
-            category=categoria,
-            overwrites=permisos,  # type: ignore
-        )
-        await foro.edit(default_auto_archive_duration=10080)
-        await foro.create_thread("Finales", content="_ _")
-        await foro.create_thread("Parciales", content="_ _")
-        await foro.create_thread("Recursos", content="_ _")
-        await foro.create_thread("Medios", content="_ _")
-        await foro.create_thread("Chat", content="_ _")
-        num = "s" if len(carreras_l) > 1 else ""
-        await ctx.respond(
-            f"Se creó el foro para la materia `{materia}` de la{num} carrera{num} "
-            + f"{array_natural(carreras_l, formato='**')}."
-        )
+        await foro.create_thread(nombre, content=otros_nombres)
+        await ctx.respond(f"Se creó la materia {nombre} en el foro {foro}")
 
     @ds.slash_command()
     async def dividir(self, ctx: ds.ApplicationContext, a: int, b: int):
