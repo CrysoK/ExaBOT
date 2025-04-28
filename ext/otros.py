@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Otros(commands.Cog, name="Otros"):
+class Otros(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_member = None
@@ -65,6 +65,26 @@ class Otros(commands.Cog, name="Otros"):
         else:
             await ctx.respond(f"Hola {miembro.mention}, de nuevo.")
         self._last_member = miembro
+
+    @ds.slash_command()
+    @commands.has_permissions(manage_messages=True)
+    async def editar_mensaje(
+        self,
+        ctx: ds.ApplicationContext,
+        message_id: str,
+        nuevo_texto: str,
+    ):
+        """Edita un mensaje enviado por el bot."""
+        try:
+            message = await ctx.channel.fetch_message(int(message_id))
+            await message.edit(content=nuevo_texto)
+            await ctx.respond(f"Mensaje editado: {message_id}")
+        except ds.NotFound:
+            await ctx.respond(f"No se encontró el mensaje con ID: {message_id}")
+        except ds.Forbidden:
+            await ctx.respond("No tengo permisos para editar este mensaje.")
+        except ValueError:
+            await ctx.respond("ID de mensaje inválido.")
 
 
 def setup(bot):
